@@ -1,13 +1,13 @@
 # pi-pstack
 
-A Pi-native port of [pstack](https://github.com/cursor/plugins/tree/main/pstack). It includes all 44 upstream skills and their references, playbooks, and scripts, plus Pi implementations of `poteto-agent` and `comment-sicko`.
+A Pi-native port of [pstack](https://github.com/cursor/plugins/tree/main/pstack). It tracks upstream pstack 0.15.46 (`cursor/plugins@0b46ec3`): 57 skills with their references, playbooks, and scripts, plus Pi implementations of `poteto-agent` and `comment-sicko`. `make-bot-ui` is not ported because it depends on Cursor Automations.
 
 ## Install
 
 Install the published package:
 
 ```bash
-pi install git:github.com/kkgogogo17/pi-pstack@v0.1.0
+pi install git:github.com/mizoo-snow21/pi-pstack
 ```
 
 Then restart Pi. Use `pi config` to enable or disable package resources.
@@ -58,7 +58,9 @@ This port deliberately removes Cursor-only setup and behavior:
 
 The extension requests confirmation for recognizable shell commands that push, alter pull requests, merge, deploy, mutate infrastructure, or recursively delete files. In non-interactive mode it blocks these commands. This is a guardrail, not a complete shell-security sandbox. Prompts also require explicit approval for all external or irreversible actions.
 
-The upstream `watch-pr` and orchestration helper scripts are retained. Their runtime requirements remain project-specific. In particular, the script package uses Bun and GitHub workflows require `gh` authentication.
+The upstream `watch-pr` helper scripts are retained. Their runtime requirements remain project-specific. In particular, the script package uses Bun and GitHub workflows require `gh` authentication. `/skill:statechart` runs TLC, so its first run installs Java and `tla2tools` with `mise` and needs the network.
+
+`/setup-pstack` covers nine roles. Upstream's reasoning budget is not ported. Set a thinking level per role by ending its selector with a level, such as `provider/model:high`.
 
 ## License and provenance
 

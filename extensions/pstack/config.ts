@@ -8,18 +8,9 @@ export const ROLE_NAMES = [
   "perf-issue",
   "hillclimb",
   "judgment and prose",
-  "hardest tasks",
-  "how explorer",
-  "how explainer",
-  "how critics",
-  "why investigators",
-  "why synthesizer",
-  "reflect tooling",
-  "reflect judgment, divergent, synthesizer",
   "arena runners",
   "arena cross-judge pool",
   "swarm workers",
-  "architect runners",
   "interrogate reviewers",
 ] as const;
 

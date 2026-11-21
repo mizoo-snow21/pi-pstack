@@ -18,3 +18,10 @@ If interactive UI is unavailable, call `pstack_config` with `action: "list-model
 - Re-run `/setup-pstack` whenever models or provider access changes.
 
 The config is user-level and applies to every later pstack session. It is not repository configuration and must not be committed.
+
+## After setup
+
+Offer each of these once, and only when the project lacks one:
+
+- A verification skill, so agents can drive the app the way a user does. Generate it with `/skill:create-verification-skill`.
+- A formal verification skill, so agents can prove a key property holds in every case in scope. Generate it with `/skill:create-formal-verification-skill`.
