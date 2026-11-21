@@ -1,6 +1,7 @@
 ---
 name: setup-pstack
 description: Configure the Pi models pstack delegates to by role. Use for /setup-pstack, "configure pstack models", or changing pstack's model choices.
+disable-model-invocation: true
 ---
 
 # Set up pstack for Pi
