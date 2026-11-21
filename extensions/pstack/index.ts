@@ -246,10 +246,13 @@ function knownExternalWrite(command: string): string | undefined {
 export default function (pi: ExtensionAPI) {
   let potetoMode = false;
   let todos: string[] = [];
+  // 「このセッションでは常に許可」を選んだ操作の種類。session_start で空に戻す
+  let alwaysAllowed = new Set<string>();
 
   pi.on("session_start", (_event, ctx) => {
     potetoMode = false;
     todos = [];
+    alwaysAllowed = new Set<string>();
     for (const entry of ctx.sessionManager.getBranch()) {
       if (entry.type !== "custom") continue;
       if (entry.customType === MODE_ENTRY) potetoMode = Boolean((entry.data as { enabled?: boolean }).enabled);
@@ -282,8 +285,12 @@ export default function (pi: ExtensionAPI) {
     const operation = input.command ? knownExternalWrite(input.command) : undefined;
     if (!operation) return;
     if (!ctx.hasUI) return { block: true, reason: `${operation} requires explicit user confirmation; non-interactive Pi cannot request it.` };
-    const approved = await ctx.ui.confirm("Confirm external or irreversible action", `Allow ${operation}?\n\n${input.command}`);
-    if (!approved) return { block: true, reason: `User declined ${operation}.` };
+    if (alwaysAllowed.has(operation)) return;
+    const allowOnce = "Allow once";
+    const allowAlways = `Always allow ${operation} in this session`;
+    const choice = await ctx.ui.select(`Allow ${operation}?\n\n${input.command}`, [allowOnce, allowAlways, "Deny"]);
+    if (choice === allowAlways) alwaysAllowed.add(operation);
+    if (choice !== allowOnce && choice !== allowAlways) return { block: true, reason: `User declined ${operation}.` };
   });
 
   pi.registerCommand("poteto-mode", {
