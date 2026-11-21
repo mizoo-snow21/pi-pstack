@@ -55,13 +55,10 @@ export async function writeConfig(config: PstackConfig): Promise<void> {
   await fs.writeFile(target, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o600 });
 }
 
-export function modelsForRole(config: PstackConfig, role: string | undefined): string[] {
+/** One entry per panel seat. `undefined` is a seat that runs on the parent model. */
+export function modelsForRole(config: PstackConfig, role: string | undefined): Array<string | undefined> {
   if (!role) return [];
   const value = config.roles[role];
   const values = typeof value === "string" ? [value] : Array.isArray(value) ? value : [];
-  return values.filter((model) => model !== "inherit-parent" && model !== "auto");
-}
-
-export function modelForRole(config: PstackConfig, role: string | undefined): string | undefined {
-  return modelsForRole(config, role)[0];
+  return values.map((model) => (model === "inherit-parent" || model === "auto" ? undefined : model));
 }

@@ -9,7 +9,7 @@ import type { Message } from "@earendil-works/pi-ai";
 import { getAgentDir, SessionManager, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { bundledAgentsDirectory, discoverAgents, projectAgentsDirectory, type AgentConfig, type AgentScope } from "./agents.ts";
-import { ROLE_NAMES, configPath, defaultConfig, modelsForRole, readConfig, writeConfig } from "./config.ts";
+import { ROLE_NAMES, configPath, modelsForRole, readConfig, writeConfig } from "./config.ts";
 
 const MAX_PARALLEL_TASKS = 8;
 const MAX_CONCURRENCY = 4;
@@ -317,18 +317,17 @@ export default function (pi: ExtensionAPI) {
       const available = (ctx.scopedModels.length ? ctx.scopedModels.map((entry) => entry.model) : ctx.modelRegistry.getAvailable())
         .map((model) => `${model.provider}/${model.id}`);
       const choices = ["inherit-parent", ...new Set(available)];
-      if (!ctx.hasUI) {
-        await writeConfig(defaultConfig());
-        return;
-      }
+      if (!ctx.hasUI) return;
       for (const role of ROLE_NAMES) {
         const current = config.roles[role];
-        const selected = await ctx.ui.select(`Model for ${role}`, choices.map((model) => model === current ? `${model} (current)` : model));
+        // The picker sets one model. A panel list is kept unless the user picks a replacement.
+        const keepList = Array.isArray(current) ? `Keep list: ${current.join(", ")}` : undefined;
+        const selected = await ctx.ui.select(`Model for ${role}`, [...(keepList ? [keepList] : []), ...choices.map((model) => model === current ? `${model} (current)` : model)]);
         if (!selected) break;
-        config.roles[role] = selected.replace(/ \(current\)$/, "");
+        if (selected !== keepList) config.roles[role] = selected.replace(/ \(current\)$/, "");
       }
       await writeConfig(config);
-      ctx.ui.notify(`Saved pstack model settings to ${configPath()}.`, "info");
+      ctx.ui.notify(`Saved pstack model settings to ${configPath()}. Set a panel list with pstack_config (models). Next, if the project lacks them: /skill:create-verification-skill, /skill:create-formal-verification-skill.`, "info");
     },
   });
 
@@ -408,7 +407,10 @@ export default function (pi: ExtensionAPI) {
         }
       }
       const config = await readConfig();
-      const childModel = (task: TaskInput, index = 0) => task.model ?? modelsForRole(config, task.role)[index % Math.max(modelsForRole(config, task.role).length, 1)] ?? (ctx.model ? `${ctx.model.provider}/${ctx.model.id}` : undefined);
+      const childModel = (task: TaskInput, index = 0) => {
+        const seats = modelsForRole(config, task.role);
+        return task.model ?? seats[index % Math.max(seats.length, 1)] ?? (ctx.model ? `${ctx.model.provider}/${ctx.model.id}` : undefined);
+      };
       const makeUpdate = (results: ChildResult[]) => onUpdate?.({
         content: [{ type: "text", text: results.map((result) => `${result.agent}: ${resultText(result)}`).join("\n\n") }],
         details: { results },

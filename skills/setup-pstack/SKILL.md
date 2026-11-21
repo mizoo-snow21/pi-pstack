@@ -14,14 +14,14 @@ If interactive UI is unavailable, call `pstack_config` with `action: "list-model
 
 - Never write an unlisted model selector.
 - Start with `inherit-parent` for any role without a deliberate model choice.
-- Panel roles can be configured as an array only by editing the JSON deliberately. Each entry means one subagent.
+- Panel roles (`arena runners`, `arena cross-judge pool`, `interrogate reviewers`) take a list. Set one with `pstack_config`, `action: "set"`, `role`, and `models`. Each entry means one subagent. The interactive picker sets a single model and offers to keep an existing list.
 - Re-run `/setup-pstack` whenever models or provider access changes.
 
 The config is user-level and applies to every later pstack session. It is not repository configuration and must not be committed.
 
 ## After setup
 
-Offer each of these once, and only when the project lacks one:
+The `/setup-pstack` command prints these two as next steps. When this skill is loaded with `/skill:setup-pstack`, offer each once, and only when the project lacks one:
 
 - A verification skill, so agents can drive the app the way a user does. Generate it with `/skill:create-verification-skill`.
 - A formal verification skill, so agents can prove a key property holds in every case in scope. Generate it with `/skill:create-formal-verification-skill`.

@@ -18,7 +18,7 @@ Open a `pstack_todo` list with one entry per phase before launching anything.
 
 1. State the done predicate and the artifact or report the swarm must return.
 2. Choose the shape. Partition into slices, race N workers on identical briefs, or mix both. For a race or mixed shape, declare `first pass`, `rank all`, or `best-of` before spawning.
-3. Pass `role: "swarm workers"` so the tool reads the worker model from `~/.pi/agent/pstack/models.json`. With no entry, or `auto` or `inherit-parent`, the workers run on the parent model. If the `subagent` tool rejects a model, omit `model` and say so. For a model race, name each arm's model up front. Pick each subagent's reasoning level for the job, per the Subagents section of the **poteto-mode** skill.
+3. Pass `role: "swarm workers"` so the tool reads the worker model from `~/.pi/agent/pstack/models.json`. With no entry, or `auto` or `inherit-parent`, the workers run on the parent model. If the `subagent` tool rejects a model, drop `role` too so the workers run on the parent model, and say so. For a model race, name each arm's model up front. Pick each subagent's reasoning level for the job, per the Subagents section of the **poteto-mode** skill.
 4. Give each worker its own writable output when it writes. When workers verify or measure commits, each brief names the exact SHAs. A measurement brief also names the method (sample count, what one sample is, order). The worker records both in its result.
 
 ## Phase B: Fan out

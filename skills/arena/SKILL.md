@@ -24,7 +24,7 @@ If a candidate produces no output, proceed with N-1 and note the dropout.
 
 ## Phase C: Cross-judge
 
-After all Phase B candidates complete, spawn one judge, with a task that forbids file writes, from the `arena cross-judge pool` entry in `~/.pi/agent/pstack/models.json`. Pass the chosen entry as `model`. The judge is never from the parent's vendor, so use the first entry from another provider. With no such entry, run the judge on the parent model and say that the vendor check did not run. An `auto` or `inherit-parent` entry is the parent model. If the `subagent` tool rejects a model, use the nearest valid slug of the same family, then the next such entry, or skip the judge, and say so. While you read in Phase D, the judge scores each candidate, by path label, on each rubric criterion and recommends a base.
+After all Phase B candidates complete, spawn one judge, with a task that forbids file writes, from the `arena cross-judge pool` entry in `~/.pi/agent/pstack/models.json`. Pass the chosen entry as `model`. The judge is never from the parent's vendor, so use the first entry from another provider. With no such entry, skip the judge and say that no cross-vendor judge ran. An `auto` or `inherit-parent` entry is the parent model. If the `subagent` tool rejects a model, use the nearest valid slug of the same family, then the next such entry, or skip the judge, and say so. The judge scores each candidate, by path label, on each rubric criterion and recommends a base. The `subagent` call blocks until the judge returns, so do your own Phase D read of the candidates before you weigh its verdict.
 
 ## Phase D: Pick a base
 
